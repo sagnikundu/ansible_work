@@ -1,0 +1,5 @@
+
+{
+  "slice_uuid":"{{ item.json.slice_uuid }}",
+  "master_thumbprint":"{{ cerificate_response.json[0].thumbprint }}"
+}

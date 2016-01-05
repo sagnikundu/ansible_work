@@ -1,0 +1,94 @@
+#
+#  Copyright 2015 VMware, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+---
+- name: create cluster name request
+  template:
+    src: cluster-name-body.json
+    dest: "{{ cluster_name_body_file }}"
+  tags:
+    - vrops_init
+
+- debug: msg="{{ lookup('file',cluster_name_body_file)}}"
+  tags:
+    - vrops_master_init
+
+- name: configure cluster name
+  uri:
+    url: https://{{ vrops_master_node_ip }}/casa/deployment/cluster/info
+    method: PUT
+    user: "{{ default_admin_user }}"      #admin
+    password: "{{ svc_vrops_admin_password }}"
+    force_basic_auth: yes
+    HEADER_Content-Type: "application/json"
+    body: "{{ lookup('file',cluster_name_body_file) }}"
+#   body: "{\"cluster_name\": \"vrops-man-cluster-01\"}"
+    validate_certs: no
+    status_code: 200
+  tags:
+
+- name: create slice name request
+  template:
+    src: slice-name-body.json
+    dest: "{{ slice_name_body_file }}"
+  tags:
+    - vrops_master_init
+
+- debug: msg="{{ lookup('file',slice_name_body_file)}}"
+  tags:
+    - vrops_master_init
+
+- name: configure slice name
+  uri:
+    url: https://{{ vrops_master_node_ip }}/casa/deployment/slice/{{ vrops_master_node_ip }}
+    method: PUT
+    user: "{{ default_admin_user }}"
+    password: "{{ svc_vrops_admin_password }}"
+    force_basic_auth: yes
+    HEADER_Content-Type: "application/json"
+#   body: "{{ lookup('file',slice_name_body_file) }}"
+    body: "{\"slice_name\": \"vrops-man-mstrn-01\"}"
+    validate_certs: no
+    status_code: 200
+  tags:
+    - vrops_master_init
+
+- name: get cluster state
+  uri:
+    url: https://{{ vrops_master_node_ip }}/casa/deployment/cluster/info
+    user: "{{ default_admin_user }}"
+    password: "{{ svc_vrops_admin_password }}"
+    force_basic_auth: yes
+    HEADER_Content-Type: "application/json"
+    validate_certs: no
+    status_code: 200
+  register: cluster_info_response
+  tags:
+    - vrops_master_init
+
+- name: initialize cluster
+  uri:
+    url: https://{{ vrops_master_node_ip }}/casa/deployment/cluster/initialization?async=false
+    method: POST
+    user: "{{ default_admin_user }}"
+    password: "{{ svc_vrops_admin_password }}"
+    force_basic_auth: yes
+    HEADER_Content-Type: "application/json"
+    validate_certs: no
+    timeout: 3600
+    status_code: 200
+  when: cluster_info_response.json.installation_state == 'NEW'
+  tags:
+    - vrops_master_init

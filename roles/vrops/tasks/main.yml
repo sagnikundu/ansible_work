@@ -1,0 +1,31 @@
+#
+#  Copyright 2015 VMware, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+# vs-vropsova_deploy
+---
+- name: deploy vsphere vRealize Operations Manager OVA
+  include: vsphere_vropsova_deploy.yml tags=vs-vropsova_deploy
+
+- name: initialize vRealize Operations Manager admin user
+  include: vrops_admin_init.yml tags=vrops_admin_init
+
+- name: initialize vRealize Operations Manager
+  include: vrops_master_init.yml tags=vrops_master_init
+
+- name: initialize vRealize Operations Manager cluster members
+  include: vrops_cluster_init.yml tags=vrops_cluster_init
+
+- name: Install Management Pack on Master
+  include: vrops_mgmtpak_install.yml tags=vrops_mgmtpak_install

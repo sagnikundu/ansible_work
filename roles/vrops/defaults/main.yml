@@ -1,0 +1,18 @@
+---
+# defaults file for vrops
+##### this is where the UI installs the ovftool this by default
+vrops_ovftool: /usr/local/bin/ovftool/ovftool
+#vrops_ova_location: "/home/sagnik/ansible-work/playbooks"
+vrops_ova_location: "/home/sagnik/ansible-work"
+vrops_enable_ssh: true
+vrops_disk_mode: 'thin'
+vrops_ip_protocol: 'IPv4'
+
+adminpass_body_file: '/tmp/adminpass-body.json'
+role_body_prefix: '/tmp/role-body'
+cluster_name_body_file: '/tmp/cluster-name-body.json'
+slice_name_body_file: '/tmp/slice-name-body.json'
+cluster_state_body_file: '/tmp/init-cluster-body.json'
+pak_file: '/tmp/pak_file.json'
+default_admin_user: 'admin'
+pak_id_file: "/tmp/pak_id_file"

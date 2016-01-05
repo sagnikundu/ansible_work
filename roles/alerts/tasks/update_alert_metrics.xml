@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ops:symptom-definition id="SymptomDefinition-VMWARE-GuestPartitionUsageCritical" adapterKindKey="VMWARE" resourceKindKey="VirtualMachine" waitCycles="2" cancelCycles="2" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ops="http://webservice.vmware.com/vRealizeOpsMgr/1.0/">
+
+  <ops:name>Guest file system space usage at critical level</ops:name>
+
+  <ops:state severity="CRITICAL">
+	   <ops:condition xsi:type="ops:htCondition">
+	 	  <ops:key>guestfilesystem|percentage</ops:key>
+	 	  <ops:operator>GT</ops:operator>
+	 	  <ops:value>80.0</ops:value>
+	 	  <ops:valueType>NUMERIC</ops:valueType>
+	 	  <ops:instanced>true</ops:instanced>
+	    </ops:condition>
+  </ops:state>
+
+</ops:symptom-definition>

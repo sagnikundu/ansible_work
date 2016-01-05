@@ -1,0 +1,8 @@
+---
+- name: Update Alert to vROPS
+  command: sh update-alert.sh
+  register: webpage
+
+- name: Print response
+  debug:
+    msg: "{{webpage }}"

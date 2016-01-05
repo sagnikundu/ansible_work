@@ -1,0 +1,4 @@
+
+{
+  "slice_name":"{{ vrops_master_node_address }}"
+}

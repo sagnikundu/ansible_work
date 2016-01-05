@@ -1,0 +1,7 @@
+---
+# tasks file for alerts , run with tags provided
+- name: Update alert metrices
+  include: update_alert_metrics.yml tags=update_alert_metrics
+
+- name: Update alert defination
+  include: update_alert.yml tags=update-alert 

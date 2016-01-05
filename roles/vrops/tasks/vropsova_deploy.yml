@@ -1,0 +1,61 @@
+#
+#  Copyright 2015 VMware, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+---
+- name: Check if vrops master already exists
+  does_vm_exist:
+    vcenter_host: "{{mgmt_vc}}"
+    vcenter_user: "{{mgmt_vc_username}}"
+    vcenter_password: "{{mgmt_vc_password}}"
+    vcenter_port: "{{ mgmt_vc_port }}"
+    vm_name: "{{ item.name }}"
+  with_items:
+    - { name: "{{ vrops_master_node_address }}", ip: "{{ vrops_master_node_ip }}" }
+    - { name: "{{ vrops_replica_node_address }}", ip: "{{ vrops_replica_node_ip }}" }
+    - { name: "{{ vrops_data_node1_address }}", ip: "{{ vrops_data_node1_ip }}" }
+    - { name: "{{ vrops_data_node2_address }}", ip: "{{ vrops_data_node2_ip }}" }
+  register: vrops_node_exists
+  tags:
+    - vropsova_deploy
+
+- debug: msg= "{{ vrops_node_exists }}"
+  tags:
+    - vropsova_deploy
+
+- name: Deploy vRealize Operations OVA
+  shell: >
+    {{ vrops_ovftool }}
+    '--name={{ item.item.name }}'
+    --acceptAllEulas
+    --allowExtraConfig
+    --X:enableHiddenProperties
+    --noSSLVerify
+    '--datastore={{vrops_datastore}}'
+    '--diskMode=thin'
+    '--ipProtocol=IPv4'
+    '--deploymentOption=small'
+    '--network={{vrops_network}}'
+    '--prop:vami.gateway.vRealize_Operations_Manager_Appliance={{vrops_gateway}}'
+    '--prop:vami.DNS.vRealize_Operations_Manager_Appliance={{vrops_dns}}'
+    '--prop:vami.ip0.vRealize_Operations_Manager_Appliance={{item.item.ip}}'
+    '--prop:vami.netmask0.vRealize_Operations_Manager_Appliance=255.255.252.0'
+    '--prop:guestinfo.cis.appliance.ssh.enabled={{ vrops_enable_ssh | string }}'
+    '--powerOn={{ vrops_poweron | string }}'
+    '{{ vrops_ova_location }}/{{ vrops_ova }}'
+    'vi://{{ mgmt_vc_username | urlencode }}:{{ mgmt_vc_password | urlencode }}@{{ mgmt_vc }}/{{ mgmt_vc_datacenter }}/host/{{ mgmt_vc_cluster | urlencode}}/'
+  when: item.msg == 'Appliance does not exist.'
+  with_items: "{{ vrops_node_exists.results }}"
+  tags:
+    - vropsova_deploy

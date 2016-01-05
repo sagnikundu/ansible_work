@@ -1,0 +1,40 @@
+---
+- name: Uploads the PAK file from the REST client to the master slice
+  command: sh /home/sagnik/ansible-work/roles/vrops/tasks/upload_pakfile.sh
+  register: upload_result
+  tags:
+  - vrops_mgmtpak_install
+
+- debug: msg="{{ lookup('file', pak_id_file )}}"
+  tags:
+  - vrops_mgmtpak_install
+
+- name: Poll master slice to check if PAK stage is set
+  uri:
+    url: https://{{ vrops_master_node_ip }}/casa/upgrade/cluster/pak/{{pak_id}}/information
+    method: GET
+    user: "{{ default_admin_user }}"
+    password: "{{ svc_vrops_admin_password }}"
+    force_basic_auth: yes
+    validate_certs: no
+    status_code: 200
+  register: poll_response
+  tags:
+    - vrops_mgmtpak_install
+
+- debug: msg={{poll_response.status}}
+  tags:
+    - vrops_mgmtpak_install
+
+- name: Install PAK on vROPS
+  uri:
+    url: https://{{vrops_master_node_ip }}/casa//upgrade/cluster/pak/{{pak_id}}/operation/install
+    method: POST
+    user: "{{ default_admin_user }}"
+    password: "{{ svc_vrops_admin_password }}"
+    force_basic_auth: yes
+    HEADER_Content-Type: "application/json"
+    validate_certs: no
+    status_code: 202
+  tags:
+    - vrops_mgmtpak_install

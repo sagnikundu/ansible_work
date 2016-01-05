@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ops:alert-definition xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:ops="http://webservice.vmware.com/vRealizeOpsMgr/1.0/">
+    <ops:id>AlertDefinition-9ba5ceca-1917-495f-ac83-aaba2d90a96</ops:id>
+    <ops:name>High CPU test 222</ops:name>
+    <ops:description>CPU usage too High</ops:description>
+    <ops:adapterKindKey>VMWARE</ops:adapterKindKey>
+    <ops:resourceKindKey>HostSystem</ops:resourceKindKey>
+    <ops:waitCycles>10</ops:waitCycles>
+    <ops:cancelCycles>10</ops:cancelCycles>
+    <ops:type>19</ops:type>
+    <ops:subType>22</ops:subType>
+    <ops:states>
+      <ops:state severity="CRITICAL">
+      <ops:symptom-set>
+      <ops:symptomDefinitionIds>
+      <ops:symptomDefinitionId>SymptomDefinition-VMWARE-HostMtuUnsupported</ops:symptomDefinitionId>
+      </ops:symptomDefinitionIds>
+      <ops:relation>SELF</ops:relation>
+      <ops:aggregation>ALL</ops:aggregation>
+      <ops:symptomSetOperator>AND</ops:symptomSetOperator>
+      </ops:symptom-set>
+      <ops:impact>
+      <ops:impactType>BADGE</ops:impactType>
+      <ops:detail>health</ops:detail>
+      </ops:impact>
+      <ops:recommendationPriorityMap>
+      <entry>
+        <key>Recommendation-df-VMWARE-MtuConfConsistent</key>
+        <value>1</value>
+      </entry>
+      </ops:recommendationPriorityMap>
+      </ops:state>
+</ops:states>
+</ops:alert-definition>

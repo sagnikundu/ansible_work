@@ -1,0 +1,45 @@
+#
+#  Copyright 2015 VMware, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+---
+- name: Deploy vRealize Operations OVA
+  shell: >
+    {{ vrops_ovftool }}
+    '--name={{ item.name }}'
+    --acceptAllEulas
+    --allowExtraConfig
+    --X:enableHiddenProperties
+    --noSSLVerify
+    '--datastore=datastore1'
+    '--diskMode=thin'
+    '--ipProtocol=IPv4'
+    '--deploymentOption=small'
+    '--network=VM Network'
+    '--prop:vami.gateway.vRealize_Operations_Manager_Appliance=10.112.75.253'
+    '--prop:vami.DNS.vRealize_Operations_Manager_Appliance=10.112.64.1'
+    '--prop:vami.ip0.vRealize_Operations_Manager_Appliance={{item.ip}}'
+    '--prop:vami.netmask0.vRealize_Operations_Manager_Appliance=255.255.252.0'
+    '--prop:guestinfo.cis.appliance.ssh.enabled=true'
+    '--powerOn=1'
+    '{{ vrops_ova_location }}/{{ vrops_ova }}'
+    'vi://{{ mgmt_vc_username | urlencode }}:{{ mgmt_vc_password | urlencode }}@{{ mgmt_vc }}/?dns={{mgmt_vc | urlencode}}'
+  with_items:
+    - { name: "{{ vrops_master_node_address }}", ip: "{{ vrops_master_node_ip }}" }
+    - { name: "{{ vrops_replica_node_address }}", ip: "{{ vrops_replica_node_ip }}" }
+    - { name: "{{ vrops_data_node1_address }}", ip: "{{ vrops_data_node1_ip }}" }
+    - { name: "{{ vrops_data_node2_address }}", ip: "{{ vrops_data_node2_ip }}" }
+  tags:
+    - vs-vropsova_deploy
+

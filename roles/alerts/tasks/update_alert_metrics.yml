@@ -1,0 +1,10 @@
+---
+- name: Update Alert Metrics in vROPS
+  command: sh update_alert_metrics.sh
+  register: webpage
+  tags:
+    - update_alert_metrics
+
+- name: Print response
+  debug:
+    msg: "{{webpage }}"

@@ -1,0 +1,82 @@
+#
+#  Copyright 2015 VMware, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+---
+- name: create initial password request
+  template:
+    src: adminpass-body.json
+    dest: "{{adminpass_body_file}}"
+  tags:
+    - vrops_admin_init
+
+- debug: msg="{{ lookup('file',adminpass_body_file)}}"
+  tags:
+    - vrops_admin_init
+
+- name: Notice -- Waiting on vROps CASA API availability.
+  wait_for: host="{{ vrops_master_node_ip}}" port=443 delay=30 timeout=3600
+  tags:
+    - vrops_admin_init
+
+# TODO: this really is a 'timed delay' and should actually check the DB port.
+- name: Notice -- Waiting briefly for databases to settle.
+  wait_for: host="{{ vrops_master_node_ip}}" port=443 delay=30 timeout=600
+  tags:
+    - vrops_admin_init
+
+- name: set admin password
+  uri:
+    url: https://{{ vrops_master_node_ip }}/casa/security/adminpassword/initial
+    method: PUT
+    HEADER_Content-Type: "application/json"
+#   body:  "{{ lookup('file',adminpass_body_file) }}"
+    body: "{\"password\": \"VMware@123\"}"
+    validate_certs: no
+    status_code: 200,500
+    register: set_admin_password_result
+    failed_when: "set_admin_password_result.status == '500' and set_admin_password_result.error_message_key != 'security.initial_password_already_set'"
+  tags:
+    - vrops_admin_init
+
+- name: create admin role request
+  template:
+    src: role-body-master.json
+    dest: "{{ item.file }}"
+  with_items:
+    - { ip: "{{ vrops_master_node_ip }}", file: '/tmp/role_body_master.json', roles: '["ADMIN","DATA","UI"]', thumbprint: '' } 
+  register: create_role_request
+  tags:
+    - vrops_admin_init
+
+- debug: msg="{{ create_role_request}}"
+  tags:
+    - vrops_admin_init
+
+- name: set admin role
+#  uri:
+#    url: https://{{ item.item.ip }}/casa/deployment/slice/role
+#    method: POST
+#    user: "{{ default_admin_user }}"                        # ---->  admin
+#    password: "{{ svc_vrops_admin_password}}"               # ---->  VMware@123
+#    force_basic_auth: yes
+#    HEADER_Content-Type: "application/json"
+#    body: "{{ lookup('file',item.item.file) }}"
+#    validate_certs: no
+#    status_code: 202
+#  with_items: "{{ create_role_request.results }}"
+  command: sh /home/sagnik/ansible-work/roles/vrops/tasks/set_admin_role.sh
+  register: status_out
+  tags:
+    - vrops_admin_init

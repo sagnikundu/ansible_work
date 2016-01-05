@@ -1,0 +1,3 @@
+---
+# vars file for vrops
+pak_id: "{{ lookup('file', pak_id_file) }}"
