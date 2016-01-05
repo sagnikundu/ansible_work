@@ -1,0 +1,18 @@
+---
+- hosts: 127.0.0.1
+  connection: local
+  user: root
+  sudo: false
+  gather_facts: false
+  serial: 1
+
+- name: setup vRealize Operations Manager (vCOPS)
+  hosts: local
+  roles:
+    - ovftool
+    - vrops
+  vars:
+    - mgmt_vc_port: "443"
+  vars_files:
+#    - vcenter.yml
+    - answerfile.yml
