@@ -1,0 +1,41 @@
+#
+#  Copyright 2015 VMware, Inc.
+#
+#  Licensed under the Apache License, Version 2.0 (the "License");
+#  you may not use this file except in compliance with the License.
+#  You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+#  Unless required by applicable law or agreed to in writing, software
+#  distributed under the License is distributed on an "AS IS" BASIS,
+#  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  See the License for the specific language governing permissions and
+#  limitations under the License.
+#
+---
+- name: Deploy vRealize Orchestrator OVA
+  shell: >
+    {{ vro_ovftool }}
+    '--name={{ item.name }}'
+    --acceptAllEulas
+    --skipManifestCheck
+    --allowExtraConfig
+    --X:enableHiddenProperties
+    --noSSLVerify
+    '--datastore={{vro_datastore}}'
+    '--diskMode={{vro_deployment_option}}'
+    '--ipProtocol=IPv4'
+    '--net:Network 1={{vro_network}}'
+    '--prop:vami.gateway.vCO_Appliance={{vro_gateway}}'
+    '--prop:vami.DNS.vCO_Appliance={{vro_dns}}'
+    '--prop:vami.ip0.vCO_Appliance={{item.ip}}'
+    '--prop:vami.netmask0.vCO_Appliance={{vro_netmask}}'
+    '--prop:guestinfo.cis.appliance.ssh.enabled=true'
+    '--powerOn=1'
+    '{{ vro_ova_location }}/{{ vro_ova }}'
+    'vi://{{ mgmt_vc_username | urlencode }}:{{ mgmt_vc_password | urlencode }}@{{ mgmt_vc }}/?dns={{esxi_host}}'
+  with_items:
+    - { name: "{{vro_host_name}}", ip: "{{ vro_ip }}" }
+  tags:
+    - vro_deploy

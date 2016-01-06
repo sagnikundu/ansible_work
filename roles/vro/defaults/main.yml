@@ -1,0 +1,6 @@
+---
+# defaults file for vrops
+vro_ovftool: /usr/local/bin/ovftool/ovftool
+vro_ova_location: "/home/sagnik/ansible-work"
+vro_enable_ssh: true
+vro_disk_mode: 'thin'

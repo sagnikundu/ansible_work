@@ -1,0 +1,3 @@
+---
+- name: depoloy vRO OVA
+  include: vro_deploy.yml tags=vro_deploy
