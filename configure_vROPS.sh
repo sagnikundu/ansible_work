@@ -1,11 +1,9 @@
 #!/bin/bash
-
+set -e
 
 #  site_vrops.yml should be in path to execute this script
 
 
-# deploy vROPS 
-/usr/bin/ansible-playbook site_vrops.yml --tags "vs-vropsova_deploy" 
 
 #initialize vRealize Operations Manager admin user
 
