@@ -27,15 +27,18 @@
     '--diskMode={{vro_deployment_option}}'
     '--ipProtocol=IPv4'
     '--net:Network 1={{vro_network}}'
-    '--prop:vami.gateway.vCO_Appliance={{vro_gateway}}'
-    '--prop:vami.DNS.vCO_Appliance={{vro_dns}}'
-    '--prop:vami.ip0.vCO_Appliance={{item.ip}}'
-    '--prop:vami.netmask0.vCO_Appliance={{vro_netmask}}'
+    '--prop:vami.gateway.VMware_vCenter_Orchestrator_Appliance={{vro_gateway}}'
+    '--prop:vami.DNS.VMware_vCenter_Orchestrator_Appliance={{vro_dns}}'
+    '--prop:vami.ip0.VMware_vCenter_Orchestrator_Appliance={{item.ip}}'
+    '--prop:vami.netmask0.VMware_vCenter_Orchestrator_Appliance={{vro_netmask}}'
+    '--prop:varoot-password="{{root_passwd}}"'
+    '--prop:vcoconf-password="{{conf_passwd}}"'
     '--prop:guestinfo.cis.appliance.ssh.enabled=true'
     '--powerOn=1'
     '{{ vro_ova_location }}/{{ vro_ova }}'
-    'vi://{{ mgmt_vc_username | urlencode }}:{{ mgmt_vc_password | urlencode }}@{{ mgmt_vc }}/?dns={{esxi_host}}'
+    'vi://{{ mgmt_vc_username | urlencode }}:{{ mgmt_vc_password | urlencode }}@{{ mgmt_vc }}/{{ mgmt_vc_datacenter }}/host/{{ esxi_host| urlencode}}/Resources/{{resource_pool_name | urlencode}}'
   with_items:
-    - { name: "{{vro_host_name}}", ip: "{{ vro_ip }}" }
+    - { name: "{{vro_host1_name}}", ip: "{{vro_ip1 }}" }
+    - { name: "{{vro_host2_name}}", ip: "{{vro_ip2 }}" }  
   tags:
     - vro_deploy
